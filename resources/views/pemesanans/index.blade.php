@@ -7,8 +7,14 @@
     <div class="container mx-auto">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Pemesanan Management</h1>
-            <a href="{{ route('pemesanans.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create
-                Pemesanan</a>
+            <div class="flex gap-2 items-center">
+                <a href="{{ route('pemesanans.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create
+                    Pemesanan</a>
+                <button type="button" onclick="salin()" class="bg-green-500 text-white px-4 py-2 rounded-md">
+                    Salin Link Custommer
+                </button>
+            </div>
+
         </div>
 
         <div class="mb-4">
@@ -19,6 +25,12 @@
                     <button type="submit" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">Search</button>
                 </div>
             </form>
+        </div>
+
+        <div id="alertBox"
+            class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center"
+            role="alert">
+            <span id="info" class="mx-auto"></span>
         </div>
 
         @if (session('success'))
@@ -94,4 +106,21 @@
             {{ $pemesanans->appends(['search' => $search ?? ''])->links() }}
         </div>
     </div>
+    <script>
+        function salin() {
+            navigator.clipboard.writeText("http://127.0.0.1:8000/form-pemesanan")
+                .then(() => {
+                    const alertBox = document.getElementById("alertBox");
+                    const info = document.getElementById("info");
+
+                    info.innerText = "Link Tersalin";
+                    alertBox.classList.remove("hidden");
+
+                    setTimeout(() => {
+                        alertBox.classList.add("hidden");
+                    }, 3000);
+                });
+        }
+    </script>
+
 @endsection

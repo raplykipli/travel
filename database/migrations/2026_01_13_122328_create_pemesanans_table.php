@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('no_hp');
             $table->integer('jumlah_peserta');
             $table->enum('status', ['menunggu', 'dikonfirmasi', 'selesai', 'dibatalkan'])->default('menunggu');
-
             $table->decimal('total_harga', 12, 2);
             $table->text('image_bukti')->nullable();
             $table->enum('metode_pembayaran', ['transfer', 'cash'])->nullable();

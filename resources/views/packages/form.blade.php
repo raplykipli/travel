@@ -26,7 +26,8 @@
 
                 <div class="mb-4">
                     <label for="buses_id" class="block text-gray-700">Bus</label>
-                    <select name="buses_id" id="buses_id" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('buses_id') border-red-500 @enderror">
+                    <select name="buses_id" id="buses_id"
+                        class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('buses_id') border-red-500 @enderror">
                         @foreach ($buses as $bus)
                             <option value="{{ $bus->id }}"
                                 {{ old('buses_id', $package->buses_id ?? '') == $bus->id ? 'selected' : '' }}>
@@ -52,7 +53,8 @@
                 <div class="mb-4">
                     <label for="durasi" class="block text-gray-700">Durasi</label>
                     <input type="text" name="durasi" id="durasi" value="{{ old('durasi', $package->durasi ?? '') }}"
-                        class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('durasi') border-red-500 @enderror">
+                        class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('durasi') border-red-500 @enderror"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     @error('durasi')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -79,7 +81,8 @@
 
                 <div class="mb-4">
                     <label for="status" class="block text-gray-700">Status</label>
-                    <select name="status" id="status" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('status') border-red-500 @enderror">
+                    <select name="status" id="status"
+                        class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('status') border-red-500 @enderror">
                         <option value="aktif" {{ old('status', $package->status ?? '') == 'aktif' ? 'selected' : '' }}>
                             Aktif</option>
                         <option value="nonaktif"
@@ -93,7 +96,8 @@
 
             <div class="mb-4">
                 <label for="fasilitas" class="block text-gray-700">Fasilitas</label>
-                <textarea name="fasilitas" id="fasilitas" rows="3" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('fasilitas') border-red-500 @enderror">{{ old('fasilitas', $package->fasilitas ?? '') }}</textarea>
+                <textarea name="fasilitas" id="fasilitas" rows="3"
+                    class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('fasilitas') border-red-500 @enderror">{{ old('fasilitas', $package->fasilitas ?? '') }}</textarea>
                 @error('fasilitas')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -101,7 +105,8 @@
 
             <div class="mb-4">
                 <label for="deskripsi" class="block text-gray-700">Deskripsi</label>
-                <textarea name="deskripsi" id="deskripsi" rows="3" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('deskripsi') border-red-500 @enderror">{{ old('deskripsi', $package->deskripsi ?? '') }}</textarea>
+                <textarea name="deskripsi" id="deskripsi" rows="3"
+                    class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error('deskripsi') border-red-500 @enderror">{{ old('deskripsi', $package->deskripsi ?? '') }}</textarea>
                 @error('deskripsi')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -121,8 +126,9 @@
                             <input type="time" name="jadwal[{{ $index }}][jam_pulang]"
                                 value="{{ $jadwal['jam_pulang'] }}"
                                 class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error("jadwal.${index}.jam_pulang") border-red-500 @enderror">
-                            <input type="number" name="jadwal[{{ $index }}][kuota]" value="{{ $jadwal['kuota'] }}"
-                                placeholder="Kuota" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error("jadwal.${index}.kuota") border-red-500 @enderror">
+                            <input type="number" name="jadwal[{{ $index }}][kuota]"
+                                value="{{ $jadwal['kuota'] }}" placeholder="Kuota"
+                                class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm @error("jadwal.${index}.kuota") border-red-500 @enderror">
                             <button type="button"
                                 class="remove-jadwal-btn bg-red-500 text-white px-2 py-1 rounded-md">Remove</button>
                         </div>
@@ -163,31 +169,31 @@
 @endsection
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const container = document.getElementById('jadwal-container');
-        const addBtn = document.getElementById('add-jadwal-btn');
-        let index = container.querySelectorAll('.jadwal-entry').length;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('jadwal-container');
+            const addBtn = document.getElementById('add-jadwal-btn');
+            let index = container.querySelectorAll('.jadwal-entry').length;
 
-        addBtn.addEventListener('click', function() {
-            const newEntry = document.createElement('div');
-            newEntry.classList.add('jadwal-entry', 'grid', 'grid-cols-5', 'gap-4', 'mb-2');
-            newEntry.innerHTML = `
+            addBtn.addEventListener('click', function() {
+                const newEntry = document.createElement('div');
+                newEntry.classList.add('jadwal-entry', 'grid', 'grid-cols-5', 'gap-4', 'mb-2');
+                newEntry.innerHTML = `
                 <input type="date" name="jadwal[${index}][tanggal]" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm">
                 <input type="time" name="jadwal[${index}][jam_berangkat]" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm">
                 <input type="time" name="jadwal[${index}][jam_pulang]" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm">
                 <input type="number" name="jadwal[${index}][kuota]" placeholder="Kuota" class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm">
                 <button type="button" class="remove-jadwal-btn bg-red-500 text-white px-2 py-1 rounded-md">Remove</button>
             `;
-            container.appendChild(newEntry);
-            index++;
-        });
+                container.appendChild(newEntry);
+                index++;
+            });
 
-        container.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('remove-jadwal-btn')) {
-                e.target.closest('.jadwal-entry').remove();
-            }
+            container.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('remove-jadwal-btn')) {
+                    e.target.closest('.jadwal-entry').remove();
+                }
+            });
         });
-    });
-</script>
+    </script>
 @endpush
