@@ -15,7 +15,7 @@
                 @php
                     $name = explode('@', auth()->user()->email)[0];
                 @endphp
-                <img src="https://ui-avatars.com/api/?name={{ urlencode($name) }}&background=3b82f6&color=fff"
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($name) }}&background=dc2626&color=fff"
                     class="w-10 h-10 rounded-full" alt="User">
                 <div>
                     <p class="text-sm font-medium text-gray-700">{{ auth()->user()->email }}</p>

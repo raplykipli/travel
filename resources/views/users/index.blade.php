@@ -7,7 +7,7 @@
     <div class="container mx-auto">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">User Management</h1>
-            <a href="{{ route('users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create User</a>
+            <a href="{{ route('users.create') }}" class="bg-red-500 text-white px-4 py-2 rounded-md">Create User</a>
         </div>
 
         <div class="mb-4">
@@ -15,7 +15,7 @@
                 <div class="flex">
                     <input type="text" name="search" placeholder="Search users..." value="{{ $search ?? '' }}"
                         class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm">
-                    <button type="submit" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">Search</button>
+                    <button type="submit" class="ml-2 px-4 py-2 bg-red-500 text-white rounded-md">Search</button>
                 </div>
             </form>
         </div>
@@ -48,7 +48,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <a href="{{ route('users.edit', $user->id) }}" class="text-blue-500 hover:underline">Edit</a>
+                            <a href="{{ route('users.edit', $user->id) }}" class="text-red-500 hover:underline">Edit</a>
                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline-block ml-4">
                                 @csrf
                                 @method('DELETE')
@@ -65,3 +65,4 @@
         </div>
     </div>
 @endsection
+

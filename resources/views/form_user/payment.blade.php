@@ -102,9 +102,9 @@
                         <!-- Informasi Rekening (for Transfer) -->
                         <div id="rekening-card" class="hidden mb-6 animate-fadeIn">
                             <div
-                                class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
+                                class="bg-gradient-to-br from-red-50 to-red-50 rounded-xl p-6 border-2 border-red-200">
                                 <div class="flex items-center mb-4">
-                                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4">
+                                    <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mr-4">
                                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -284,3 +284,4 @@
         }
     </style>
 @endpush
+

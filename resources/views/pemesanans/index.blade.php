@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Pemesanan Management</h1>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('pemesanans.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create
+                <a href="{{ route('pemesanans.create') }}" class="bg-red-500 text-white px-4 py-2 rounded-md">Create
                     Pemesanan</a>
                 <button type="button" onclick="salin()" class="bg-green-500 text-white px-4 py-2 rounded-md">
                     Salin Link Custommer
@@ -22,7 +22,7 @@
                 <div class="flex">
                     <input type="text" name="search" placeholder="Search Pemesanan..." value="{{ $search ?? '' }}"
                         class="w-full px-2 py-2 border-gray-300 rounded-md shadow-sm">
-                    <button type="submit" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">Search</button>
+                    <button type="submit" class="ml-2 px-4 py-2 bg-red-500 text-white rounded-md">Search</button>
                 </div>
             </form>
         </div>
@@ -67,7 +67,7 @@
                                 @elseif ($pemesanan->status == 'menunggu')
                                     <span class="px-2 py-1 bg-yellow-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @elseif ($pemesanan->status == 'selesai')
-                                    <span class="px-2 py-1 bg-blue-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
+                                    <span class="px-2 py-1 bg-red-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @else
                                     <span class="px-2 py-1 bg-red-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @endif
@@ -86,7 +86,7 @@
                             </td>
                             <td class="px-6 py-4 flex gap-4">
                                 <a href="{{ route('pemesanans.edit', $pemesanan->id) }}"
-                                    class="text-blue-500 hover:underline">Edit</a>
+                                    class="text-red-500 hover:underline">Edit</a>
                                 <form action="{{ route('pemesanans.destroy', $pemesanan->id) }}" method="POST"
                                     class="inline-block">
                                     @csrf

@@ -39,7 +39,7 @@
                                         class="px-2 py-1 bg-yellow-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @elseif ($pemesanan->status == 'selesai')
                                     <span
-                                        class="px-2 py-1 bg-blue-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
+                                        class="px-2 py-1 bg-red-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @else
                                     <span
                                         class="px-2 py-1 bg-red-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
@@ -64,3 +64,4 @@
         </div>
     </div>
 @endsection
+

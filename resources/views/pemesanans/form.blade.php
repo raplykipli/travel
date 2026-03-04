@@ -198,7 +198,7 @@
             <div class="flex w-full justify-between items-center mt-4">
                 <a href="{{ route('pemesanans.index') }}" class="px-2 py-2 bg-gray-400 rounded-md">Kembali</a>
                 <button type="submit"
-                    class="bg-blue-500 text-white px-4 py-2 rounded-md">{{ isset($pemesanan) ? 'Update' : 'Create' }}</button>
+                    class="bg-red-500 text-white px-4 py-2 rounded-md">{{ isset($pemesanan) ? 'Update' : 'Create' }}</button>
             </div>
         </form>
     </div>
@@ -463,3 +463,4 @@
         });
     </script>
 @endpush
+

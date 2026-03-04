@@ -66,9 +66,9 @@
 
                         <!-- Info Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                            <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                            <div class="p-4 bg-red-50 rounded-xl border border-red-200">
                                 <div
-                                    class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -111,7 +111,7 @@
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row gap-4 mt-10">
                             <a href="{{ route('form-user.index') }}"
-                                class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
+                                class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition duration-200 shadow-lg hover:shadow-xl flex items-center justify-center">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -168,3 +168,4 @@
         }
     </style>
 @endpush
+

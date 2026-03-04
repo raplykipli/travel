@@ -15,8 +15,8 @@
                         <i class="fas {{ $persentaseBooking >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i> {{ number_format(abs($persentaseBooking), 1) }}% dari bulan lalu
                     </p>
                 </div>
-                <div class="bg-blue-100 p-4 rounded-full">
-                    <i class="fas fa-calendar-check text-2xl text-blue-600"></i>
+                <div class="bg-red-100 p-4 rounded-full">
+                    <i class="fas fa-calendar-check text-2xl text-red-600"></i>
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
                                 @elseif($booking->status == 'dibatalkan')
                                 <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800">Cancelled</span>
                                 @else
-                                <span class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">{{ ucfirst($booking->status) }}</span>
+                                <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800">{{ ucfirst($booking->status) }}</span>
                                 @endif
                             </td>
                         </tr>
@@ -150,8 +150,8 @@
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <a href="{{ route('packages.create') }}"
-                class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
-                <i class="fas fa-plus-circle text-3xl text-blue-600 mb-2"></i>
+                class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition">
+                <i class="fas fa-plus-circle text-3xl text-red-600 mb-2"></i>
                 <span class="text-sm font-medium text-gray-700">Tambah Tour Baru</span>
             </a>
             <a href="{{ route('pemesanans.create') }}"
