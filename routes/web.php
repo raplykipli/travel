@@ -43,6 +43,9 @@ Route::get('/form-pemesanan/thank-you', function () {
     return view('form_user.thank-you');
 })->name('form-user.thank-you');
 
+// API endpoint untuk mendapatkan kursi terpakai
+Route::get('/api/kursi-terpakai', [PemesananController::class, 'getKursiTerpakai'])->name('api.kursi-terpakai');
+
 
 /*
 |------------------------------
@@ -51,12 +54,10 @@ Route::get('/form-pemesanan/thank-you', function () {
 */
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('users', UserController::class);
-    Route::resource('bus', BusController::class);
+    Route::resource('bus', BusController::class)->parameters(['bus' => 'bus']);
     Route::resource('packages', PackageController::class);
     Route::resource('pemesanans', PemesananController::class);
 

@@ -46,6 +46,7 @@
                         <th class="px-6 py-3 text-left">Kode Pemesanan</th>
                         <th class="px-6 py-3 text-left">Paket Tour</th>
                         <th class="px-6 py-3 text-left">Nama Pemesan</th>
+                        <th class="px-6 py-3 text-left">Nomor Kursi</th>
                         <th class="px-6 py-3 text-left">Total Harga</th>
                         <th class="px-6 py-3 text-left">Status</th>
                         <th class="px-6 py-3 text-left">Status Pembayaran</th>
@@ -58,20 +59,17 @@
                             <td class="px-6 py-4">{{ $pemesanan->kode_pemesanan }}</td>
                             <td class="px-6 py-4">{{ $pemesanan->package->nama_paket }}</td>
                             <td class="px-6 py-4">{{ $pemesanan->nama_pemesan }}</td>
+                            <td class="px-6 py-4 font-bold">{{ $pemesanan->nomor_kursi ?? '-' }}</td>
                             <td class="px-6 py-4">{{ 'Rp ' . number_format($pemesanan->total_harga, 0, ',', '.') }}</td>
                             <td class="px-6 py-4">
                                 @if ($pemesanan->status == 'dikonfirmasi')
-                                    <span
-                                        class="px-2 py-1 bg-green-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
+                                    <span class="px-2 py-1 bg-green-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @elseif ($pemesanan->status == 'menunggu')
-                                    <span
-                                        class="px-2 py-1 bg-yellow-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
+                                    <span class="px-2 py-1 bg-yellow-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @elseif ($pemesanan->status == 'selesai')
-                                    <span
-                                        class="px-2 py-1 bg-blue-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
+                                    <span class="px-2 py-1 bg-blue-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @else
-                                    <span
-                                        class="px-2 py-1 bg-red-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
+                                    <span class="px-2 py-1 bg-red-500/80 text-white rounded-md">{{ $pemesanan->status }}</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">

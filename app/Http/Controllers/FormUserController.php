@@ -11,7 +11,7 @@ class FormUserController extends Controller
 {
     public function index()
     {
-        $packages = Package::where('status', 'aktif')->get();
+        $packages = Package::with('bus')->where('status', 'aktif')->get();
 
         $currentYear = date('Y');
         $lastPemesanan = Pemesanan::where('kode_pemesanan', 'like', "ps-{$currentYear}-%")
@@ -29,25 +29,67 @@ class FormUserController extends Controller
         return view('form_user.index', compact('packages', 'kode_pemesanan'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\WhapiService $whapiService)
     {
         $request->validate([
-            'kode_pemesanan' => 'required|unique:pemesanans,kode_pemesanan',
             'paket_tour_id' => 'required|exists:packages,id',
             'jadwal' => 'required',
             'nama_pemesan' => 'required',
             'no_hp' => 'required',
-            'jumlah_peserta' => 'required|integer|min:1',
-            'total_harga' => 'required|numeric',
+            'nomor_kursi' => 'required|array|min:1',
+            'nomor_kursi.*' => 'string',
         ]);
 
-        $data = $request->all();
-        $data['status'] = 'menunggu';
-        $data['status_pembayaran'] = 'pending';
+        $package = Package::findOrFail($request->paket_tour_id);
 
-        $pemesanan = Pemesanan::create($data);
+        $currentYear = date('Y');
+        $lastPemesanan = Pemesanan::where('kode_pemesanan', 'like', "ps-{$currentYear}-%")
+            ->orderBy('kode_pemesanan', 'desc')
+            ->first();
 
-        return redirect()->route('form-user.payment', $pemesanan);
+        $lastNumber = 0;
+        if ($lastPemesanan) {
+            $lastNumber = (int) substr($lastPemesanan->kode_pemesanan, -4);
+        }
+
+        foreach ($request->nomor_kursi as $index => $kursi) {
+            $newNumber = str_pad($lastNumber + 1 + $index, 4, '0', STR_PAD_LEFT);
+            $kode_pemesanan = "ps-{$currentYear}-{$newNumber}";
+
+            $pemesanan = Pemesanan::create([
+                'kode_pemesanan' => $kode_pemesanan,
+                'nomor_kursi' => $kursi,
+                'paket_tour_id' => $request->paket_tour_id,
+                'jadwal' => $request->jadwal,
+                'nama_pemesan' => $request->nama_pemesan,
+                'no_hp' => $request->no_hp,
+                'jumlah_peserta' => 1,
+                'status' => 'menunggu',
+                'total_harga' => $package->harga,
+                'status_pembayaran' => 'pending',
+            ]);
+
+            // Load package to get its name
+            $pemesanan->load('package');
+
+            // Send WhatsApp notification
+            $message = "Halo {$pemesanan->nama_pemesan},\n\n";
+            $message .= "Terima kasih telah melakukan pemesanan di Keystour Travel.\n";
+            $message .= "Berikut detail pesanan Anda:\n";
+            $message .= "Kode Pesanan: *{$pemesanan->kode_pemesanan}*\n";
+            $message .= "Paket: *{$pemesanan->package->nama_paket}*\n";
+            $message .= "Jadwal: " . date('d M Y', strtotime($pemesanan->jadwal)) . "\n";
+            $message .= "Nomor Kursi: *{$pemesanan->nomor_kursi}*\n";
+            $message .= "Total Harga: Rp " . number_format($pemesanan->total_harga, 0, ',', '.') . "\n\n";
+            $message .= "Silakan melanjutkan ke proses pembayaran melalui link berikut:\n";
+            $message .= route('form-user.payment', $pemesanan->id) . "\n\n";
+            $message .= "Jika Anda membutuhkan bantuan, jangan ragu untuk membalas pesan ini.";
+
+            $whapiService->sendMessage($pemesanan->no_hp, $message);
+        }
+
+        // Redirect to a thank you or success page where they are told to check WA
+        return redirect()->route('form-user.thank-you')->with('success', 'Pesanan berhasil dibuat. Kami telah mengirimkan detail dan link pembayaran untuk masing-masing kursi melalui WhatsApp Anda.');
     }
 
     public function payment(Pemesanan $pemesanan)

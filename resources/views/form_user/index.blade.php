@@ -39,7 +39,7 @@
                                 <option value="">Pilih Paket Tour</option>
                                 @foreach ($packages as $package)
                                     <option value="{{ $package->id }}" data-jadwal="{{ json_encode($package->jadwal) }}"
-                                        data-harga="{{ $package->harga }}"
+                                        data-harga="{{ $package->harga }}" data-bus="{{ json_encode($package->bus) }}"
                                         {{ old('paket_tour_id') == $package->id ? 'selected' : '' }}>
                                         {{ $package->nama_paket }}
                                     </option>
@@ -90,18 +90,43 @@
                             @enderror
                         </div>
 
-                        <!-- Jumlah Peserta -->
-                        <div class="mb-4">
-                            <label for="jumlah_peserta" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Jumlah Peserta <span class="text-red-500">*</span>
+                        <!-- Pemilihan Kursi (Denah) -->
+                        <div class="mb-4 md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Pilih Kursi <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="jumlah_peserta" id="jumlah_peserta"
-                                value="{{ old('jumlah_peserta') }}" min="1" placeholder="Jumlah peserta"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('jumlah_peserta') border-red-500 @enderror">
-                            @error('jumlah_peserta')
-                                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                            
+                            <!-- Legend -->
+                            @php
+                                $seatSvgIcon = '<svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><rect x="8" y="2" width="8" height="4" rx="2" /><rect x="5" y="7" width="14" height="11" rx="2" /><rect x="3" y="10" width="2" height="6" rx="1" /><rect x="19" y="10" width="2" height="6" rx="1" /></svg>';
+                            @endphp
+                            <div class="flex items-center space-x-6 mb-6 text-sm font-medium justify-center text-gray-700">
+                                <div class="flex items-center"><div class="w-8 h-8 bg-gray-300 rounded-md flex items-center justify-center text-white mr-2">{!! $seatSvgIcon !!}</div> Tersedia</div>
+                                <div class="flex items-center"><div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center text-white mr-2">{!! $seatSvgIcon !!}</div> Dipilih</div>
+                                <div class="flex items-center"><div class="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center text-white mr-2">{!! $seatSvgIcon !!}</div> Terpakai</div>
+                            </div>
+
+                            <div id="seat-map-container" class="bg-gray-100 p-6 rounded-xl border border-gray-300 hidden flex-col items-center">
+                                <div class="w-full max-w-sm">
+                                    <div class="bg-gray-800 rounded-t-3xl h-12 mb-6 flex items-center justify-center font-bold text-white border-b-4 border-gray-600 tracking-widest shadow-md">SUPIR</div>
+                                    <div id="seat-grid" class="flex flex-col gap-3">
+                                        <!-- Kursi akan di-render menggunakan JS -->
+                                    </div>
+                                    <div class="mt-8 bg-gray-400 h-8 rounded-b-xl shadow-inner"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden inputs for submission -->
+                            <div id="selected-seats-inputs"></div>
+                            
+                            <p class="text-sm text-gray-800 font-semibold mt-4 text-center" id="seat-selection-text">Belum ada kursi yang dipilih.</p>
+                            @error('nomor_kursi')
+                                <p class="text-red-500 text-sm mt-2 text-center">{{ $message }}</p>
                             @enderror
                         </div>
+                        
+                        <!-- Hidden Jumlah Peserta (Masih dipakai untuk hitung harga di JS tapi Hidden) -->
+                        <input type="hidden" name="jumlah_peserta" id="jumlah_peserta" value="{{ old('jumlah_peserta', 0) }}">
 
                         <!-- Total Harga -->
                         <div class="mb-4">
@@ -158,6 +183,15 @@
             const priceInfo = document.getElementById('price-info');
             const hargaPerOrang = document.getElementById('harga-per-orang');
             const totalDisplay = document.getElementById('total-display');
+            
+            const seatMapContainer = document.getElementById('seat-map-container');
+            const seatGrid = document.getElementById('seat-grid');
+            const selectedSeatsInputs = document.getElementById('selected-seats-inputs');
+            const seatSelectionText = document.getElementById('seat-selection-text');
+            
+            let selectedSeatsArray = [];
+            let bookedSeatsArray = [];
+            let currentBusSeats = 0;
 
             function formatRupiah(angka) {
                 return new Intl.NumberFormat('id-ID').format(angka);
@@ -211,17 +245,176 @@
                     priceInfo.classList.add('hidden');
                 }
             }
-
-            packageSelect.addEventListener('change', function() {
-                updateJadwalOptions();
-                calculateTotalHarga();
+            
+            // Seat Map Logics
+            jadwalSelect.addEventListener('change', async function() {
+                const paketId = packageSelect.value;
+                const jadwal = jadwalSelect.value;
+                
+                selectedSeatsArray = [];
+                updateSeatSelection();
+                
+                if (paketId && jadwal) {
+                    try {
+                        const response = await fetch(`/api/kursi-terpakai?paket_tour_id=${paketId}&jadwal=${jadwal}`);
+                        bookedSeatsArray = await response.json();
+                        renderSeatMap();
+                    } catch (error) {
+                        console.error('Error fetching booked seats:', error);
+                    }
+                } else {
+                    seatMapContainer.classList.add('hidden');
+                }
             });
 
-            jumlahPesertaInput.addEventListener('input', calculateTotalHarga);
+            function toggleSeat(seatNum) {
+                if (bookedSeatsArray.includes(seatNum)) return; // Tidak bisa klik kursi terpakai
+
+                const index = selectedSeatsArray.indexOf(seatNum);
+                if (index > -1) {
+                    selectedSeatsArray.splice(index, 1); // remove
+                } else {
+                    selectedSeatsArray.push(seatNum); // add
+                }
+                
+                updateSeatSelection();
+            }
+            
+            function updateSeatSelection() {
+                // Update input hidden and text
+                jumlahPesertaInput.value = selectedSeatsArray.length;
+                
+                selectedSeatsInputs.innerHTML = '';
+                selectedSeatsArray.forEach(seat => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'nomor_kursi[]';
+                    input.value = seat;
+                    selectedSeatsInputs.appendChild(input);
+                });
+
+                seatSelectionText.textContent = selectedSeatsArray.length > 0 
+                    ? `Kursi dipilih: ${selectedSeatsArray.join(', ')}` 
+                    : 'Belum ada kursi yang dipilih.';
+
+                renderSeatMap();
+                calculateTotalHarga();
+            }
+
+            function renderSeatMap() {
+                if (currentBusSeats <= 0) {
+                    seatMapContainer.classList.add('hidden');
+                    return;
+                }
+                
+                seatMapContainer.classList.remove('hidden');
+                seatMapContainer.classList.add('flex');
+                
+                seatGrid.innerHTML = '';
+                
+                // Layout standard bus: 2 kursi kiri, lorong, 2 kursi kanan
+                const totalRows = Math.ceil(currentBusSeats / 4);
+                let seatCounter = 1;
+                const alphabet = ['A', 'B', 'C', 'D'];
+
+                for (let row = 1; row <= totalRows; row++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'flex justify-between w-full mb-1';
+                    
+                    // Kiri (A & B)
+                    const leftDiv = document.createElement('div');
+                    leftDiv.className = 'flex gap-2';
+                    for (let i = 0; i < 2; i++) {
+                        const seatName = `${row}${alphabet[i]}`;
+                        if (seatCounter <= currentBusSeats) {
+                            leftDiv.appendChild(createSeatElement(seatName));
+                            seatCounter++;
+                        } else {
+                            leftDiv.appendChild(createEmptySpace());
+                        }
+                    }
+                    
+                    // Lorong (Space)
+                    const aisleDiv = document.createElement('div');
+                    aisleDiv.className = 'w-8';
+                    
+                    // Kanan (C & D)
+                    const rightDiv = document.createElement('div');
+                    rightDiv.className = 'flex gap-2';
+                    for (let i = 2; i < 4; i++) {
+                        const seatName = `${row}${alphabet[i]}`;
+                        if (seatCounter <= currentBusSeats) {
+                            rightDiv.appendChild(createSeatElement(seatName));
+                            seatCounter++;
+                        } else {
+                            rightDiv.appendChild(createEmptySpace());
+                        }
+                    }
+                    
+                    rowDiv.appendChild(leftDiv);
+                    rowDiv.appendChild(aisleDiv);
+                    rowDiv.appendChild(rightDiv);
+                    
+                    seatGrid.appendChild(rowDiv);
+                }
+            }
+
+            function createSeatElement(seatName) {
+                const isBooked = bookedSeatsArray.includes(seatName);
+                const isSelected = selectedSeatsArray.includes(seatName);
+                
+                const seatBtn = document.createElement('div');
+                seatBtn.className = `w-12 h-14 flex flex-col items-center justify-center rounded-lg cursor-pointer select-none transition-all duration-200 shadow-sm relative overflow-hidden transform hover:scale-105`;
+                
+                const seatSvg = `<svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mx-auto mb-1"><rect x="8" y="2" width="8" height="4" rx="2" /><rect x="5" y="7" width="14" height="11" rx="2" /><rect x="3" y="10" width="2" height="6" rx="1" /><rect x="19" y="10" width="2" height="6" rx="1" /></svg>`;
+                seatBtn.innerHTML = `${seatSvg}<span class="text-[10px] font-bold leading-none">${seatName}</span>`;
+                
+                if (isBooked) {
+                    seatBtn.className = `w-12 h-14 flex flex-col items-center justify-center rounded-lg select-none relative overflow-hidden bg-red-600 text-white cursor-not-allowed opacity-90`;
+                    seatBtn.innerHTML = `${seatSvg}<span class="text-[10px] font-bold leading-none">${seatName}</span>`;
+                } else if (isSelected) {
+                    seatBtn.classList.add('bg-green-500', 'text-white', 'shadow-md', 'ring-2', 'ring-green-400', 'ring-offset-1');
+                    seatBtn.onclick = () => toggleSeat(seatName);
+                } else {
+                    seatBtn.classList.add('bg-gray-300', 'text-white', 'hover:bg-gray-400');
+                    seatBtn.onclick = () => toggleSeat(seatName);
+                }
+                
+                return seatBtn;
+            }
+            
+            function createEmptySpace() {
+                const empty = document.createElement('div');
+                empty.className = 'w-12 h-14';
+                return empty;
+            }
+
+            packageSelect.addEventListener('change', function() {
+                selectedSeatsArray = [];
+                bookedSeatsArray = [];
+                updateSeatSelection();
+                
+                const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+                if (selectedOption && selectedOption.value) {
+                    let busData = null;
+                    try {
+                        busData = JSON.parse(selectedOption.getAttribute('data-bus') || '{}');
+                    } catch(e) {}
+                    currentBusSeats = busData ? (parseInt(busData.jumlah_kursi) || 0) : 0;
+                } else {
+                    currentBusSeats = 0;
+                }
+                
+                updateJadwalOptions();
+                calculateTotalHarga();
+                renderSeatMap();
+            });
 
             // Initial population
-            updateJadwalOptions();
-            calculateTotalHarga();
+            if(packageSelect.value){
+                const evt = new Event('change');
+                packageSelect.dispatchEvent(evt);
+            }
         });
     </script>
 @endpush

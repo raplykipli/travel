@@ -25,7 +25,7 @@ class Package extends Model
 
     public function bus()
     {
-        return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class, 'buses_id');
     }
 
     public function pemesanans()

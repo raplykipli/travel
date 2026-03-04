@@ -8,6 +8,7 @@ class Pemesanan extends Model
 {
     protected $fillable = [
         'kode_pemesanan',
+        'nomor_kursi',
         'paket_tour_id',
         'jadwal',
         'nama_pemesan',

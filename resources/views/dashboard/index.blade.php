@@ -10,9 +10,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 mb-1">Total Booking</p>
-                    <p class="text-3xl font-bold text-gray-800">1,247</p>
-                    <p class="text-sm text-green-600 mt-2">
-                        <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
+                    <p class="text-3xl font-bold text-gray-800">{{ number_format($totalBooking) }}</p>
+                    <p class="text-sm {{ $persentaseBooking >= 0 ? 'text-green-600' : 'text-red-600' }} mt-2">
+                        <i class="fas {{ $persentaseBooking >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i> {{ number_format(abs($persentaseBooking), 1) }}% dari bulan lalu
                     </p>
                 </div>
                 <div class="bg-blue-100 p-4 rounded-full">
@@ -25,9 +25,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 mb-1">Pendapatan</p>
-                    <p class="text-3xl font-bold text-gray-800">Rp 842M</p>
-                    <p class="text-sm text-green-600 mt-2">
-                        <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
+                    <p class="text-3xl font-bold text-gray-800">Rp {{ number_format($pendapatanTotal / 1000000, 1) }}Jt</p>
+                    <p class="text-sm {{ $persentasePendapatan >= 0 ? 'text-green-600' : 'text-red-600' }} mt-2">
+                        <i class="fas {{ $persentasePendapatan >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i> {{ number_format(abs($persentasePendapatan), 1) }}% dari bulan lalu
                     </p>
                 </div>
                 <div class="bg-green-100 p-4 rounded-full">
@@ -40,9 +40,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 mb-1">Tour Aktif</p>
-                    <p class="text-3xl font-bold text-gray-800">34</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ $tourAktif }}</p>
                     <p class="text-sm text-green-600 mt-2">
-                        <i class="fas fa-arrow-up"></i> 3 tour baru
+                        <i class="fas fa-plus"></i> {{ $tourBaru }} tour baru bulan ini
                     </p>
                 </div>
                 <div class="bg-purple-100 p-4 rounded-full">
@@ -55,9 +55,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 mb-1">Total Pelanggan</p>
-                    <p class="text-3xl font-bold text-gray-800">5,892</p>
-                    <p class="text-sm text-green-600 mt-2">
-                        <i class="fas fa-arrow-up"></i> 24% dari bulan lalu
+                    <p class="text-3xl font-bold text-gray-800">{{ number_format($totalPelanggan) }}</p>
+                    <p class="text-sm {{ $persentasePelanggan >= 0 ? 'text-green-600' : 'text-red-600' }} mt-2">
+                        <i class="fas {{ $persentasePelanggan >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i> {{ number_format(abs($persentasePelanggan), 1) }}% dari bulan lalu
                     </p>
                 </div>
                 <div class="bg-orange-100 p-4 rounded-full">
@@ -85,43 +85,29 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                        @forelse($bookingTerbaru as $booking)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-900">BK001</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">Ahmad Rizki</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">Bali Paradise</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">15 Jan 2026</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">{{ $booking->kode_pemesanan }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">{{ $booking->nama_pemesan }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ $booking->package->nama_paket ?? '-' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ $booking->created_at->format('d M Y') }}</td>
                             <td class="px-6 py-4">
+                                @if($booking->status == 'dikonfirmasi')
                                 <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">Confirmed</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-900">BK002</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">Siti Nurhaliza</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">Lombok Explorer</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">16 Jan 2026</td>
-                            <td class="px-6 py-4">
+                                @elseif($booking->status == 'menunggu')
                                 <span class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pending</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-900">BK003</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">Budi Santoso</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">Jakarta City Tour</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">17 Jan 2026</td>
-                            <td class="px-6 py-4">
-                                <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">Confirmed</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-900">BK004</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">Dewi Lestari</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">Yogyakarta Heritage</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">18 Jan 2026</td>
-                            <td class="px-6 py-4">
+                                @elseif($booking->status == 'dibatalkan')
                                 <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800">Cancelled</span>
+                                @else
+                                <span class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">{{ ucfirst($booking->status) }}</span>
+                                @endif
                             </td>
                         </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-sm text-center text-gray-500">Belum ada booking terbaru.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -133,65 +119,28 @@
                 <h3 class="text-lg font-semibold text-gray-800">Tour Populer</h3>
             </div>
             <div class="p-6 space-y-4">
+                @forelse($tourPopuler as $index => $tour)
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=100&h=100&fit=crop"
-                            class="w-12 h-12 rounded-lg object-cover" alt="Bali">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl font-bold text-gray-400">
+                            {{ $index + 1 }}
+                        </div>
                         <div>
-                            <p class="font-medium text-gray-800">Bali Paradise</p>
-                            <p class="text-sm text-gray-500">342 booking</p>
+                            <p class="font-medium text-gray-800">{{ $tour->nama_paket }}</p>
+                            <p class="text-sm text-gray-500">{{ $tour->pemesanans_count }} booking</p>
                         </div>
                     </div>
+                    @if($index == 0)
                     <i class="fas fa-fire text-orange-500"></i>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=100&h=100&fit=crop"
-                            class="w-12 h-12 rounded-lg object-cover" alt="Lombok">
-                        <div>
-                            <p class="font-medium text-gray-800">Lombok Explorer</p>
-                            <p class="text-sm text-gray-500">289 booking</p>
-                        </div>
-                    </div>
-                    <i class="fas fa-fire text-orange-500"></i>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=100&h=100&fit=crop"
-                            class="w-12 h-12 rounded-lg object-cover" alt="Yogyakarta">
-                        <div>
-                            <p class="font-medium text-gray-800">Yogyakarta Heritage</p>
-                            <p class="text-sm text-gray-500">256 booking</p>
-                        </div>
-                    </div>
+                    @elseif($index == 1)
                     <i class="fas fa-star text-yellow-500"></i>
+                    @elseif($index == 2)
+                    <i class="fas fa-medal text-gray-400"></i>
+                    @endif
                 </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1555400681-5b55053ed5e5?w=100&h=100&fit=crop"
-                            class="w-12 h-12 rounded-lg object-cover" alt="Bromo">
-                        <div>
-                            <p class="font-medium text-gray-800">Bromo Adventure</p>
-                            <p class="text-sm text-gray-500">198 booking</p>
-                        </div>
-                    </div>
-                    <i class="fas fa-star text-yellow-500"></i>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1604999333679-b86d54738315?w=100&h=100&fit=crop"
-                            class="w-12 h-12 rounded-lg object-cover" alt="Raja Ampat">
-                        <div>
-                            <p class="font-medium text-gray-800">Raja Ampat Diving</p>
-                            <p class="text-sm text-gray-500">167 booking</p>
-                        </div>
-                    </div>
-                    <i class="fas fa-trophy text-blue-500"></i>
-                </div>
+                @empty
+                <p class="text-sm text-gray-500">Belum ada data tour.</p>
+                @endforelse
             </div>
         </div>
     </div>
@@ -200,21 +149,21 @@
     <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button
+            <a href="{{ route('packages.create') }}"
                 class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
                 <i class="fas fa-plus-circle text-3xl text-blue-600 mb-2"></i>
                 <span class="text-sm font-medium text-gray-700">Tambah Tour Baru</span>
-            </button>
-            <button
+            </a>
+            <a href="{{ route('pemesanans.create') }}"
                 class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition">
                 <i class="fas fa-calendar-plus text-3xl text-green-600 mb-2"></i>
                 <span class="text-sm font-medium text-gray-700">Buat Booking</span>
-            </button>
-            <button
+            </a>
+            <a href="{{ route('users.create') }}"
                 class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition">
                 <i class="fas fa-user-plus text-3xl text-purple-600 mb-2"></i>
-                <span class="text-sm font-medium text-gray-700">Tambah Pelanggan</span>
-            </button>
+                <span class="text-sm font-medium text-gray-700">Tambah Akun Admin</span>
+            </a>
         </div>
     </div>
 @endsection
